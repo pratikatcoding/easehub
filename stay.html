@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EaseHub — Find Your Stay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+    /* small page-specific tweaks */
+    .page-hero{padding:28px 0 18px;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+    .tabs{display:flex;gap:10px;margin-top:14px;}
+    .tab{padding:10px 14px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.04);cursor:pointer;font-weight:700;}
+    .tab.active{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 10px 30px rgba(255,107,0,0.08)}
+    .list-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px;}
+    .stay-card{background:#fff;border-radius:14px;padding:12px;box-shadow:0 14px 36px rgba(12,12,12,0.06);transition:transform .28s, box-shadow .28s, opacity .5s;opacity:0;transform:translateY(18px);}
+    .stay-card.show{opacity:1;transform:translateY(0);}
+    .stay-thumb{width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:10px;}
+    .stay-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .pill{background:#FFFAF5;color:var(--primary);border-radius:10px;padding:6px 8px;font-weight:700;}
+    @media(max-width:1000px){
+      .list-grid{grid-template-columns:1fr;}
+      .page-hero{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+  <!-- copy navbar from index.html (same markup) -->
+  <header class="navbar" id="topNav">
+    <div class="nav-inner container">
+      <div class="brand">
+        <div class="mark"><div class="mark">
+        <img src="https://image2url.com/images/1763453634014-4471bab2-9fa6-4e58-90ce-f17d59238f33.png" 
+       width="106" height="106" alt="EaseHub Logo"/>
+</div>
+</div>
+        <div class="brand-text">
+          <div class="brand-title">EaseHub</div>
+          <div class="brand-sub">Student services, simplified</div>
+        </div>
+      </div>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html#home">Home</a>
+        <a href="stay.html">Find Your Stay</a>
+        <a href="meals.html">Healthy Meals</a>
+        <a href="laundry.html">Laundry</a>
+        <a href="index.html#extra">Extra Services</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="index.html#extra" id="exploreBtn">Explore Now</a>
+        <button class="hamb" id="hambBtn" aria-label="menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-hero">
+      <div>
+        <h1>Find Your Stay</h1>
+        <p class="muted">Verified PGs and flats near campus — transparent pricing & student reviews.</p>
+        <div class="tabs" role="tablist" aria-label="Stay types">
+          <!-- <button class="tab active" data-view="pg">PGs • 30</button>
+          <button class="tab" data-view="flats">Flats • 25</button> -->
+        </div>
+      </div>
+      <div>
+        <a class="btn btn-ghost" href="index.html#contact">Need Help?</a>
+      </div>
+    </section>
+
+    <section id="stayList">
+      <div class="list-grid" id="listGrid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- footer -->
+  <footer class="footer">
+    <div class="container f-inner">
+      <div class="f-left">
+        <div class="mark"><div class="mark">
+  <img src="https://image2url.com/images/1763453634014-4471bab2-9fa6-4e58-90ce-f17d59238f33.png" 
+       width="106" height="106" alt="EaseHub Logo"/>
+</div>
+</div>
+        <div>
+          <strong>EaseHub</strong>
+          <div class="muted">Student services, simplified</div>
+        </div>
+      </div>
+      <div class="f-right muted">© <span id="yr"></span> EaseHub • Made for Students</div>
+    </div>
+  </footer>
+
+  <!-- modal (same markup) -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div id="modalTitle" class="modal-title"></div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modalPrimary">Take Action</button>
+        <button class="btn btn-ghost" id="modalSecondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+  <script src="./services.js"></script>
+  <script>
+    // initialize this page view
+    document.addEventListener('DOMContentLoaded', ()=> {
+      Services.initStayPage({
+        pgCount: 30,
+        flatsCount: 25,
+        containerId: 'listGrid',
+        tabsSelector: '.tab'
+      });
+    });
+  </script>
+</body>
+</html>
