@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EaseHub — Laundry</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    /* --- Layout & Structure (No Colors) --- */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand-title {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Hero Section (Clean Layout) */
+    .laundry-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 40px 0;
+      border-bottom: 1px solid #eee;
+      /* Subtle separator */
+      margin-bottom: 30px;
+    }
+
+    .hero-text h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .hero-text p {
+      color: #666;
+      font-size: 1.1rem;
+      max-width: 500px;
+    }
+
+    /* Grid System */
+    .laundry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 20px;
+      padding-bottom: 50px;
+    }
+
+    /* Card Design */
+    .laundry-card {
+      background: #fff;
+      border: 1px solid #eee;
+      /* Clean border instead of colored shadow */
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .laundry-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      /* Neutral shadow */
+    }
+
+    .laundry-img-wrapper {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .laundry-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .laundry-card:hover .laundry-img {
+      transform: scale(1.05);
+    }
+
+    .card-body {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      border-top: 1px solid #f5f5f5;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .price span {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    /* Modal & Calendar Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 450px;
+      padding: 25px;
+      border-radius: 12px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Calendar Grid */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .day-label {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .day-num {
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+    }
+
+    .day-num:hover:not(.empty) {
+      background: #f0f0f0;
+    }
+
+    /* Using generic 'active-day' class that we can style nicely */
+    .day-num.selected {
+      background: #000;
+      color: #fff;
+    }
+
+    /* Neutral selection */
+    .day-num.today {
+      border-color: #000;
+      font-weight: bold;
+    }
+
+    /* Time Slots */
+    .time-slots {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .time-pill {
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .time-pill.selected {
+      background: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    @media(max-width:1000px) {
+      .laundry-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .laundry-hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar" id="topNav">
+    <div class="nav-inner container">
+      <div class="brand">
+        <div class="mark"><img src="https://image2url.com/images/1763453634014-4471bab2-9fa6-4e58-90ce-f17d59238f33.png"
+            width="106" height="106" alt="description" /></div>
+        <div class="brand-text">
+          <div class="brand-title">EaseHub</div>
+          <div class="brand-sub">Student services, simplified</div>
+        </div>
+      </div>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html#home">Home</a>
+        <a href="stay.html">Find Your Stay</a>
+        <a href="meals.html">Healthy Meals</a>
+        <a href="laundry.html">Laundry</a>
+        <a href="index.html#extra">Extra Services</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="index.html#extra" id="exploreBtn">Explore Now</a>
+        <button class="hamb" id="hambBtn" aria-label="menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="laundry-hero">
+      <div class="hero-text">
+        <h1>Laundry Services</h1>
+        <p>Quick wash, economy and scheduled pickups — student friendly pricing.</p>
+      </div>
+      <div>
+        <a class="btn btn-ghost" href="index.html#contact">Corporate / Bulk?</a>
+      </div>
+    </section>
+
+    <section>
+      <div class="laundry-grid" id="laundryGrid">
+
+        <div class="laundry-card">
+          <div class="laundry-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=600&q=80"
+              class="laundry-img" alt="Wash and Fold">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Wash & Fold</h3>
+            <p class="card-desc">Complete machine wash, tumble dry, and neat folding. Delivered ready to wear.</p>
+            <div class="card-footer">
+              <div class="price">₹60 <span>/kg</span></div>
+              <button class="btn btn-primary" onclick="openBooking('Wash & Fold')">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="laundry-card">
+          <div class="laundry-img-wrapper">
+            <img src="data:image/jpeg;base64,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"
+              class="laundry-img" alt="Steam Iron">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Steam Iron</h3>
+            <p class="card-desc">Professional steam ironing to remove wrinkles. Perfect for interviews.</p>
+            <div class="card-footer">
+              <div class="price">₹15 <span>/pc</span></div>
+              <button class="btn btn-primary" onclick="openBooking('Steam Iron')">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="laundry-card">
+          <div class="laundry-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1567113463300-102a7eb3cb26?auto=format&fit=crop&w=600&q=80"
+              class="laundry-img" alt="Dry Clean">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Dry Clean</h3>
+            <p class="card-desc">Premium care for suits, coats, and delicate fabrics that cannot be washed.</p>
+            <div class="card-footer">
+              <div class="price">₹250 <span>/item</span></div>
+              <button class="btn btn-primary" onclick="openBooking('Dry Clean')">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="bookingModal">
+    <div class="modal-backdrop" onclick="closeBooking()"></div>
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeBooking()">✕</button>
+      <h3 id="modalServiceTitle" style="margin-top:0;">Schedule Pickup</h3>
+
+      <div style="margin: 20px 0;">
+        <div class="calendar-header">
+          <span id="calMonth">Month</span>
+          <div>
+            <button onclick="changeMonth(-1)" class="btn btn-ghost" style="padding: 2px 8px;">&lt;</button>
+            <button onclick="changeMonth(1)" class="btn btn-ghost" style="padding: 2px 8px;">&gt;</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calGrid">
+        </div>
+
+        <div style="margin-top:15px;">
+          <small style="font-weight:bold; display:block; margin-bottom:5px;">Time Slot</small>
+          <div class="time-slots">
+            <div class="time-pill" onclick="selectTime(this)">9-11 AM</div>
+            <div class="time-pill" onclick="selectTime(this)">12-2 PM</div>
+            <div class="time-pill" onclick="selectTime(this)">4-6 PM</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%" onclick="confirmBooking()">Confirm Schedule</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container f-inner">
+      <div class="f-left">
+        <div class="mark"><img src="https://image2url.com/images/1763453634014-4471bab2-9fa6-4e58-90ce-f17d59238f33.png"
+            width="106" height="106" alt="description" /></div>
+        <div>
+          <strong>EaseHub</strong>
+          <div class="muted">Student services, simplified</div>
+        </div>
+      </div>
+      <div class="f-right muted">© <span id="yr"></span> EaseHub • Made for Students</div>
+    </div>
+  </footer>
+
+  <script src="./script.js"></script>
+  <script>
+    // Calendar Logic
+    const date = new Date();
+    let currMonth = date.getMonth();
+    let currYear = date.getFullYear();
+    let selectedDate = null;
+    let selectedTime = null;
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    function openBooking(service) {
+      document.getElementById('bookingModal').classList.add('active');
+      document.getElementById('modalServiceTitle').innerText = `Book ${service}`;
+      renderCalendar();
+    }
+
+    function closeBooking() {
+      document.getElementById('bookingModal').classList.remove('active');
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calGrid');
+      document.getElementById('calMonth').innerText = `${months[currMonth]} ${currYear}`;
+      grid.innerHTML = '';
+
+      const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+      days.forEach(d => grid.innerHTML += `<div class="day-label">${d}</div>`);
+
+      const firstDay = new Date(currYear, currMonth, 1).getDay();
+      const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const d = document.createElement('div');
+        grid.appendChild(d);
+      }
+
+      const today = new Date();
+
+      for (let i = 1; i <= lastDate; i++) {
+        const el = document.createElement('div');
+        el.className = 'day-num';
+        el.innerText = i;
+        if (i === today.getDate() && currMonth === today.getMonth() && currYear === today.getFullYear()) {
+          el.classList.add('today');
+        }
+        el.onclick = () => {
+          document.querySelectorAll('.day-num').forEach(x => x.classList.remove('selected'));
+          el.classList.add('selected');
+          selectedDate = `${i} ${months[currMonth]}`;
+        };
+        grid.appendChild(el);
+      }
+    }
+
+    function changeMonth(delta) {
+      currMonth += delta;
+      if (currMonth > 11) { currMonth = 0; currYear++; }
+      if (currMonth < 0) { currMonth = 11; currYear--; }
+      renderCalendar();
+    }
+
+    function selectTime(el) {
+      document.querySelectorAll('.time-pill').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedTime = el.innerText;
+    }
+
+    function confirmBooking() {
+      if (!selectedDate || !selectedTime) return alert("Select Date & Time");
+      alert(`Booked for ${selectedDate} at ${selectedTime}`);
+      closeBooking();
+    }
+
+    document.getElementById('yr').innerText = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
