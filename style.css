@@ -381,3 +381,28 @@ body{padding-top:110px;}
   background: #FFF4E6;
   border-color: #ffcc99;
 }
+
+/* --- SIGN IN BUTTON STYLES --- */
+.btn-signin {
+  background-color: transparent;
+  color: #333;
+  border: 2px solid #333;
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+  /* Space between Sign In and Explore */
+  transition: all 0.3s ease;
+}
+
+.btn-signin:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Adjust nav-actions to align buttons nicely */
+.nav-actions {
+  display: flex;
+  align-items: center;
+}
