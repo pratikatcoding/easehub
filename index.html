@@ -154,7 +154,13 @@
             </nav>
 
 
+            <!-- <div class="nav-actions">
+                <a class="btn btn-primary" href="#extra" id="exploreBtn">Explore Now</a>
+                <button class="hamb" id="hambBtn" aria-label="menu">☰</button>
+            </div> -->
+
             <div class="nav-actions">
+                <button class="btn btn-signin" id="signInBtn">Sign In</button>
                 <a class="btn btn-primary" href="#extra" id="exploreBtn">Explore Now</a>
                 <button class="hamb" id="hambBtn" aria-label="menu">☰</button>
             </div>
@@ -369,6 +375,7 @@
             // Element References
             const cakeBtn = document.getElementById('cakeBtn');
             const transportBtn = document.getElementById('transportBtn');
+            const signInBtn = document.getElementById('signInBtn'); // Reference new button
             const simpleButtons = document.querySelectorAll('.simple-booking-btn'); // SELECT ALL NEW BUTTONS
 
             const modal = document.getElementById('modal');
@@ -461,6 +468,58 @@
                         </div>
                     `;
                 });
+            }
+            // ============================================
+            // NEW: SIGN IN LOGIC
+            // ============================================
+            if (signInBtn) {
+                signInBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openCustomModal();
+                    modalTitle.innerText = "Welcome Back!";
+                    defaultActions.style.display = 'none'; // Hide default buttons
+
+                    // Reusing your existing css classes for a clean look
+                    modalBody.innerHTML = `
+                        <form onsubmit="handleLogin(event)">
+                            <div class="cake-form-group">
+                                <label>Email or Username</label>
+                                <input type="email" class="cake-form-input" placeholder="student@college.edu" required>
+                            </div>
+                            <div class="cake-form-group">
+                                <label>Password</label>
+                                <input type="password" class="cake-form-input" placeholder="••••••••" required>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.9rem;">
+                                <label><input type="checkbox"> Remember me</label>
+                                <a href="#" style="color:#fca311; text-decoration:none;">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="btn-order-confirm">Sign In</button>
+                        </form>
+                        <p class="muted" style="text-align:center; margin-top:15px; font-size:0.9rem;">
+                            New to EaseHub? <a href="#" style="color:#fca311; font-weight:bold;">Create Account</a>
+                        </p>
+                    `;
+                });
+            }
+
+            // Fake Login Handler
+            window.handleLogin = function (e) {
+                e.preventDefault();
+                // Simulate processing
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = "Verifying...";
+                btn.style.opacity = "0.7";
+
+                setTimeout(() => {
+                    closeCustomModal();
+                    alert("Successfully Signed In!");
+                    // Optional: Change button text to "Profile" after login
+                    signInBtn.innerText = "Profile";
+                    signInBtn.style.border = "2px solid #fca311";
+                    signInBtn.style.color = "#fca311";
+                }, 1500);
             }
 
             // ============================================
