@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  /* 1. The Floating Button Container */
+  .whatsapp-btn-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999; /* Ensures it stays on top of other content */
+    font-family: Arial, sans-serif;
+  }
+
+  /* 2. The Main Button */
+  .whatsapp-btn {
+    background-color: #25D366; /* Official WhatsApp Green */
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .whatsapp-btn:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+    background-color: #128C7E; /* Darker green on hover */
+  }
+
+  /* 3. The "Chat with us" Tooltip (Optional) */
+  .whatsapp-tooltip {
+    position: absolute;
+    right: 70px; /* To the left of the button */
+    top: 15px;
+    background-color: white;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  /* Show tooltip on hover */
+  .whatsapp-btn-container:hover .whatsapp-tooltip {
+    opacity: 1;
+  }
+  
+  /* SVG Icon Styling */
+  .whatsapp-icon {
+    width: 35px;
+    height: 35px;
+    fill: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="whatsapp-btn-container">
+    <div class="whatsapp-tooltip">Chat with us on WhatsApp</div>
+    
+    <a href="https://wa.me/916201614778?text=Hello%20I%20am%20interested%20in%20your%20services" 
+       target="_blank" 
+       class="whatsapp-btn">
+       
+       <svg class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+         <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-27.9l-6.7-4-69.8 18.3 18.6-68.1-4.4-6.9c-19.2-30.5-29.3-66-29.3-103.1 0-105.7 86.1-191.6 192.1-191.6 51.2 0 99.4 19.9 135.5 56 36.1 36.1 56 84.4 56 135.6 0 105.7-86 191.7-192 191.7z"/>
+       </svg>
+    </a>
+</div>
+</body>
+</html>
