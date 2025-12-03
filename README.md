@@ -42,8 +42,8 @@ In most colleges, hostel, mess, and laundry systems operate in silos using manua
 
 ## 👥 Team
 * **Pratik** - Full Stack Developer
-* *[Team Member Name]* - Frontend/Design
-* *[Team Member Name]* - Backend/Database
+* *Ankit Kumar* - Frontend/Design
+* *Ankit Kumar* - Backend/Database
 
 ---
 *Built with ❤️ for [Name of College/Hackathon]*
