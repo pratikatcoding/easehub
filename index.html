@@ -424,7 +424,7 @@
                 </div>
             </div>
             <div class="f-right muted">© <span id="yr"></span> EaseHub • Made for Students</div>
-            <a class="tag" style="text-decoration: none;" href="chatbot.html">WhatsApp Services</a>
+            <a class="tag" style="text-decoration: none;" href="chatbot.html">Chatbot</a>
             <a class="tag" style="text-decoration: none;" href="feedback.html">FEEDBACK</a>
         </div>
     </footer>
@@ -547,18 +547,22 @@
             // ============================================
             // NEW: SIGN IN LOGIC
             // ============================================
+            
             if (signInBtn) {
                 signInBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     openCustomModal();
-                    modalTitle.innerText = "Welcome Back!";
+                    // modalTitle.innerText = "Welcome Back!";
+                    
                     defaultActions.style.display = 'none'; // Hide default buttons
 
                     // Reusing your existing css classes for a clean look
                     modalBody.innerHTML = `
                         <form onsubmit="handleLogin(event)">
                             <div class="cake-form-group">
-                                <label>Email or Username</label>
+                            <center><img src="https://i.ibb.co/7tD8cqYC/Untitled-design.png" alt="My Website Logo" width="150" height="auto"></center><center><span class="logo-text"><b>WELCOME BACK!</b></span></center><br>
+                                
+                            <label>Email or Username</label>
                                 <input type="email" class="cake-form-input" placeholder="student@college.edu" required>
                             </div>
                             <div class="cake-form-group">
