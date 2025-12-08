@@ -1,10 +1,10 @@
 // services.js
 // Exposes Services namespace with helpers for stay/meals/laundry pages.
-// Logic: Static data (30 PGs, 25 Flats), with Section Headers ("Student PGs" & "Flats").
+// Logic: Static data (30 PGs, 25 Flats), with Section Headers.
 
 const Services = (function(){
   
-  // --- 1. DATASETS (Static Data: 30 PGs, 25 Flats) ---
+  // --- 1. DATASETS (Static Data) ---
   
   const STAY_DATA = [
     // --- 30 PGs ---
@@ -84,7 +84,7 @@ const Services = (function(){
 
   // --- 2. HELPERS ---
 
-  // reveal animation using IntersectionObserver
+  // reveal animation
   function watchReveal(containerSelector){
     const observer = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
@@ -105,48 +105,49 @@ const Services = (function(){
   function createStayCard(item){
     const div = document.createElement('article');
     div.className = 'stay-card';
-    // Added flex-wrap to button container and added "View on Map" button
+    
+    // UPDATED LAYOUT: Removed "Book Demo". Adjusted buttons to match image format.
     div.innerHTML = `
       <img class="stay-thumb" src="${item.img}" alt="${item.title}">
-      <div>
+      <div style="display: flex; flex-direction: column; height: 100%;">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
           <h3 style="margin:0;font-size:16px">${item.title}</h3>
           <div class="pill">₹${item.price.toLocaleString()}/mo</div>
         </div>
         <p class="muted" style="margin:8px 0">${item.location} • ${item.dist} km from campus</p>
         <p style="font-weight:600;margin:8px 0 12px">${item.desc}</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary small-book">Book Demo</button>
-          <button class="btn btn-ghost small-more">Details</button>
-          <button class="btn btn-ghost small-map">View on Map</button>
+        
+        <div style="display:flex;gap:10px;margin-top:auto;">
+            <button class="btn btn-whatsapp small-whatsapp" style="flex:1;">WhatsApp</button>
+            <button class="btn btn-ghost small-more" style="flex:1;">Details</button>
+        </div>
+
+        <div style="margin-top:12px; text-align:center;">
+             <span class="small-map" style="color:#555; cursor:pointer; font-size:14px; font-weight:500;">View on Map</span>
         </div>
       </div>
     `;
-    // handlers
+
+    // Handler: Details Modal
     div.querySelector('.small-more').addEventListener('click', ()=>{
+      // Removed "Request Demo" button from modal as well
       showModal(item.title, `<p><b>Price:</b> ₹${item.price.toLocaleString()} / month</p>
         <p><b>Location:</b> ${item.location} • ${item.dist} km from campus</p>
         <p style="margin-top:8px">${item.desc}</p>
-        <img src="${item.img}" style="width:100%;border-radius:10px;margin-top:10px;">`, 'Request Demo', ()=>alert('Demo request sent (demo)!'));
-    });
-    div.querySelector('.small-book').addEventListener('click', ()=>{
-      showModal('Request Demo', `<p>Request a demo for <strong>${item.title}</strong></p>
-        <label style="display:block;margin:8px 0 4px;color:#666">Your name</label>
-        <input id="m_name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">
-        <label style="display:block;margin:8px 0 4px;color:#666">Phone / Email</label>
-        <input id="m_contact" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">`, 'Send', ()=>{
-          const nm = document.getElementById('m_name')?.value || '';
-          const ct = document.getElementById('m_contact')?.value || '';
-          if(!nm || !ct){ alert('Please enter name and contact'); return; }
-          alert(`Demo requested for ${item.title} — ${nm} • ${ct} (demo)`);
-        });
+        <img src="${item.img}" style="width:100%;border-radius:10px;margin-top:10px;">`);
     });
 
-    // New Handler for Map
+    // Handler: Map Link
     div.querySelector('.small-map').addEventListener('click', ()=>{
-        // Constructs a query using Location + Indore (inferred from data context)
         const mapQuery = encodeURIComponent(item.location + ' Indore');
         window.open(`https://www.google.com/maps/search/?api=1&query=${mapQuery}`, '_blank');
+    });
+    
+    // Handler: WhatsApp
+    div.querySelector('.small-whatsapp').addEventListener('click', () => {
+        const message = `Hi, I am interested in ${item.title}. Can you please provide more details?`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
     });
 
     return div;
@@ -154,7 +155,6 @@ const Services = (function(){
 
   // --- 3. RENDER FUNCTIONS ---
 
-  // Render Stay (PG/Flat) with HEADERS
   function renderStay(containerId){
     const cont = document.getElementById(containerId);
     if(!cont) return;
@@ -163,13 +163,10 @@ const Services = (function(){
     let currentSection = null;
 
     STAY_DATA.forEach(it=>{
-      // Check if we need to insert a header (PG or Flat)
       if(it.type !== currentSection){
         currentSection = it.type;
         const header = document.createElement('h2');
         header.innerText = (it.type === 'pg') ? 'Student PGs' : 'Flats & Apartments';
-        
-        // STYLING: Make header span full width of the grid and add spacing
         header.style.gridColumn = '1 / -1'; 
         header.style.width = '100%';
         header.style.margin = '25px 0 15px 0';
@@ -177,57 +174,46 @@ const Services = (function(){
         header.style.borderBottom = '2px solid #eee';
         header.style.color = '#333';
         header.style.fontSize = '22px';
-        
         cont.appendChild(header);
       }
-
-      const card = createStayCard(it);
-      cont.appendChild(card);
+      cont.appendChild(createStayCard(it));
     });
-
-    // trigger reveal observer
     window.setTimeout(()=> watchReveal('#'+containerId), 120);
   }
 
-  // Render Meals
   function renderMeals(containerId){
     const cont = document.getElementById(containerId);
     if(!cont) return;
     cont.innerHTML = '';
-    
     MEAL_DATA.forEach((m)=>{
       const d = document.createElement('div');
       d.className = 'meal-card';
+      // Removed Order (Demo) button
       d.innerHTML = `
         <img class="meal-img" src="${m.img}" alt="${m.title}">
         <h3 style="margin:0;font-size:18px">${m.title}</h3>
-        <p class="muted" style="margin:6px 0">Fresh home-cooked style • Weekly menu changes</p>
+        <p class="muted" style="margin:6px 0">Fresh home-cooked style</p>
         <div class="meal-tags">
           <div class="tag-pill">${m.tag}</div>
           <div style="font-weight:700;margin-left:auto">₹${m.price}</div>
         </div>
         <div style="margin-top:10px;display:flex;gap:8px">
-          <button class="btn btn-primary meal-order">Order (Demo)</button>
-          <button class="btn btn-ghost meal-details">Details</button>
+          <button class="btn btn-ghost meal-details" style="width:100%">View Menu</button>
         </div>
       `;
-      // handlers
       d.querySelector('.meal-details').addEventListener('click', ()=>{
-        showModal(m.title, `<p><b>Price:</b> ₹${m.price}</p><p>Sample menu: Dal, Sabji, Roti, Rice, Salad. Menu rotates weekly.</p>
-          <img src="${m.img}" style="width:100%;border-radius:10px;margin-top:8px;">`, 'Order (Demo)', ()=>alert('Order placed (demo)!'));
+        showModal(m.title, `<p><b>Price:</b> ₹${m.price}</p><p>Sample menu: Dal, Sabji, Roti, Rice, Salad.</p>
+          <img src="${m.img}" style="width:100%;border-radius:10px;margin-top:8px;">`, 'Order Now', ()=>alert('Order placed (demo)!'));
       });
-      d.querySelector('.meal-order').addEventListener('click', ()=> alert('Order placed (demo)!'));
       cont.appendChild(d);
     });
     window.setTimeout(()=> watchReveal('#'+containerId), 100);
   }
 
-  // Render Laundry
   function renderLaundry(containerId){
     const cont = document.getElementById(containerId);
     if(!cont) return;
     cont.innerHTML = '';
-    
     LAUNDRY_DATA.forEach(p=>{
       const e = document.createElement('div');
       e.className = 'laundry-card';
@@ -237,16 +223,12 @@ const Services = (function(){
         <p class="muted" style="margin:6px 0">${p.desc}</p>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
           <div style="font-weight:800">₹${p.price}/kg</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary pickup">Schedule Pickup</button>
-            <button class="btn btn-ghost details">Details</button>
-          </div>
+          <button class="btn btn-ghost details">Details</button>
         </div>
       `;
       e.querySelector('.details').addEventListener('click', ()=> {
-        showModal(p.title, `<p><b>Price:</b> ₹${p.price}/kg</p><p>${p.desc}</p>`, 'Schedule (Demo)', ()=>alert('Pickup scheduled (demo)'));
+        showModal(p.title, `<p><b>Price:</b> ₹${p.price}/kg</p><p>${p.desc}</p>`, 'Schedule Pickup', ()=>alert('Pickup scheduled (demo)'));
       });
-      e.querySelector('.pickup').addEventListener('click', ()=>alert('Pickup scheduled (demo)'));
       cont.appendChild(e);
     });
     window.setTimeout(()=> watchReveal('#'+containerId), 100);
@@ -255,21 +237,14 @@ const Services = (function(){
   // --- 4. PUBLIC API ---
   return {
     initStayPage: function(opts){
-      // Defaults
       opts = Object.assign({containerId:'listGrid'}, opts || {});
-      
-      // Render Everything immediately
       renderStay(opts.containerId);
     },
-
     initMealsPage: function(opts){
-      opts = opts || {};
-      renderMeals(opts.containerId || 'mealGrid');
+      renderMeals((opts || {}).containerId || 'mealGrid');
     },
-
     initLaundryPage: function(opts){
-      opts = opts || {};
-      renderLaundry(opts.containerId || 'laundryGrid');
+      renderLaundry((opts || {}).containerId || 'laundryGrid');
     }
   };
 })();
