@@ -483,7 +483,7 @@
       div.className = 'stay-card';
 
       // Card HTML Structure
-      // Added flex-wrap and NEW WHATSAPP BUTTON logic here
+      // "Book Demo" button REMOVED from the HTML below
       div.innerHTML = `
         <img class="stay-thumb" src="${item.img}" alt="${item.title}">
         <div>
@@ -495,8 +495,7 @@
           <p style="font-weight:600;margin:8px 0 12px">${item.desc}</p>
           
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-primary small-book">Book Demo</button>
-            <a href="https://wa.me/916201614778" target="_blank" class="btn btn-whatsapp">WhatsApp</a>
+            <a href="https://wa.me/916201614778" target="_blank" class="btn btn-whatsapp">Book Now</a>
             <button class="btn btn-ghost small-more">Details</button>
             <button class="btn btn-ghost small-map">View on Map</button>
           </div>
@@ -515,22 +514,7 @@
         );
       });
 
-      div.querySelector('.small-book').addEventListener('click', () => {
-        showModal('Request Demo', `
-          <p>Request a demo for <strong>${item.title}</strong></p>
-          <label style="display:block;margin:8px 0 4px;color:#666">Your name</label>
-          <input id="m_name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">
-          <label style="display:block;margin:8px 0 4px;color:#666">Phone / Email</label>
-          <input id="m_contact" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">`,
-          'Send',
-          () => {
-            const nm = document.getElementById('m_name')?.value || '';
-            const ct = document.getElementById('m_contact')?.value || '';
-            if (!nm || !ct) { alert('Please enter name and contact'); return; }
-            alert(`Demo requested for ${item.title} — ${nm} • ${ct} (demo)`);
-          }
-        );
-      });
+      // "Book Demo" click listener removed here
 
       // FIXED MAP URL LOGIC
       div.querySelector('.small-map').addEventListener('click', () => {
