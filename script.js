@@ -1,46 +1,56 @@
+// script.js
+// Core UI + global modal helpers for EaseHub
+
+// 👇 Backend ka base URL
+const API_BASE_URL = "https://easehub-backend.onrender.com";
+
 // smooth scroll for anchors
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click', function(e){
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function (e) {
     const target = this.getAttribute('href');
-    if(!target || target === '#') return;
+    if (!target || target === '#') return;
     e.preventDefault();
     const el = document.querySelector(target);
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
 
 // mobile hamburger
 const hamb = document.getElementById('hambBtn');
 const navLinks = document.getElementById('navLinks');
-hamb && hamb.addEventListener('click', ()=>{
-  if(navLinks.style.display === 'flex'){
-    navLinks.style.display = 'none';
-  } else {
-    navLinks.style.display = 'flex';
-    navLinks.style.flexDirection = 'column';
-    navLinks.style.position = 'absolute';
-    navLinks.style.right = '24px';
-    navLinks.style.top = '72px';
-    navLinks.style.background = 'var(--glass)';
-    navLinks.style.padding = '12px';
-    navLinks.style.borderRadius = '10px';
-    navLinks.style.boxShadow = '0 10px 30px rgba(0,0,0,0.12)';
-  }
-});
+if (hamb && navLinks) {
+  hamb.addEventListener('click', () => {
+    if (navLinks.style.display === 'flex') {
+      navLinks.style.display = 'none';
+    } else {
+      navLinks.style.display = 'flex';
+      navLinks.style.flexDirection = 'column';
+      navLinks.style.position = 'absolute';
+      navLinks.style.right = '24px';
+      navLinks.style.top = '72px';
+      navLinks.style.background = 'var(--glass)';
+      navLinks.style.padding = '12px';
+      navLinks.style.borderRadius = '10px';
+      navLinks.style.boxShadow = '0 10px 30px rgba(0,0,0,0.12)';
+    }
+  });
+}
 
 // navbar scroll effect
 const navInner = document.querySelector('.nav-inner');
-window.addEventListener('scroll', () => {
-  if(window.scrollY > 60){
-    navInner.style.transform = 'translateY(-4px)';
-    navInner.style.boxShadow = '0 18px 50px rgba(12,12,12,0.12)';
-  } else {
-    navInner.style.transform = 'translateY(0)';
-    navInner.style.boxShadow = '0 8px 30px rgba(12,12,12,0.06)';
-  }
-});
+if (navInner) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      navInner.style.transform = 'translateY(-4px)';
+      navInner.style.boxShadow = '0 18px 50px rgba(12,12,12,0.12)';
+    } else {
+      navInner.style.transform = 'translateY(0)';
+      navInner.style.boxShadow = '0 8px 30px rgba(12,12,12,0.06)';
+    }
+  });
+}
 
-// card buttons open modal with details
+// 🔹 Global modal refs (services.js + index.js dono use karenge)
 const modal = document.getElementById('modal');
 const modalBackdrop = document.getElementById('modalBackdrop');
 const modalClose = document.getElementById('modalClose');
@@ -49,99 +59,40 @@ const modalBody = document.getElementById('modalBody');
 const modalPrimary = document.getElementById('modalPrimary');
 const modalSecondary = document.getElementById('modalSecondary');
 
-
-function showModal(title, bodyHTML, primaryText = 'OK', primaryHandler = null){
+function showModal(title, bodyHTML, primaryText = 'OK', primaryHandler = null) {
+  if (!modal) return;
   modalTitle.textContent = title;
   modalBody.innerHTML = bodyHTML;
   modalPrimary.textContent = primaryText;
+
   modal.classList.add('show');
+
   modalPrimary.onclick = () => {
-    if(primaryHandler) primaryHandler();
+    if (primaryHandler) primaryHandler();
     hideModal();
   };
-  modalSecondary.onclick = hideModal;
-  modalClose.onclick = hideModal;
-  modalBackdrop.onclick = hideModal;
+  if (modalSecondary) modalSecondary.onclick = hideModal;
+  if (modalClose) modalClose.onclick = hideModal;
+  if (modalBackdrop) modalBackdrop.onclick = hideModal;
 }
-function hideModal(){
+
+function hideModal() {
+  if (!modal) return;
   modal.classList.remove('show');
 }
 
-// card action handlers
-document.querySelectorAll('.tag').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const type = btn.dataset.type;
-    const title = btn.dataset.title || 'Details';
-    if(type === 'stay'){
-      showModal(title, `<p>Here are sample PG listings (demo):</p>
-        <ul style="color:#333;">
-          <li><b>Sunny PG</b> — ₹6,300 / month • 2.5 km</li>
-          <li><b>Campus Lodge</b> — ₹5,800 / month • 1.8 km</li>
-        </ul>`, 'Request Demo', ()=>alert('Demo request for PG sent!'));
-    } else if(type === 'meals'){
-      showModal(title, `<p>Sample meal menus (demo):</p>
-        <ul style="color:#333;">
-          <li>Weekly Plan A — ₹1400 (Veg)</li>
-          <li>Weekly Plan B — ₹1600 (Non-Veg)</li>
-        </ul>`, 'Order (Demo)', ()=>alert('Order placed (demo)!'));
-    } else if(type === 'laundry'){
-      showModal(title, `<p>Pick a plan (demo):</p>
-        <ul style="color:#333;">
-          <li>Quick Wash — ₹99 / kg</li>
-          <li>Economy — ₹69 / kg</li>
-        </ul>`, 'Schedule (Demo)', ()=>alert('Pickup scheduled (demo)!'));
-    }
-  });
-});
-
-// extra services buttons
-document.querySelectorAll('.extra-btn').forEach(b => {
-  b.addEventListener('click', () => {
-    const service = b.dataset.service;
-
-    showModal(
-      service,
-      `
-      <p>You selected <strong>${service}</strong>. Please provide details in demo form to proceed.</p>
-
-      <label style="display:block;margin:8px 0 4px;color:#666">Your Name</label>
-      <input id="m_name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">
-
-      <label style="display:block;margin:8px 0 4px;color:#666">Phone / Email</label>
-      <input id="m_contact" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px;">
-
-      <label style="display:block;margin:8px 0 4px;color:#666">Select Date</label>
-      <input type="date" id="m_date" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:12px;">
-      `,
-      'Book (Demo)',
-      () => {
-        const nm = document.getElementById('m_name')?.value || '';
-        const ct = document.getElementById('m_contact')?.value || '';
-        const dt = document.getElementById('m_date')?.value || '';
-
-        if (!nm || !ct || !dt) {
-          alert('Please enter name, contact, and date.');
-          return;
-        }
-
-        alert(`Demo booking sent for ${service}
-Name: ${nm}
-Contact: ${ct}
-Date: ${dt}`);
-      }
-    );
-  });
-});
-
+// global expose
+window.showModal = showModal;
+window.hideModal = hideModal;
 
 // testimonial auto-scroll
-(function(){
+(function () {
   const track = document.getElementById('testiTrack');
-  if(!track) return;
+  if (!track) return;
   let idx = 0;
-  setInterval(()=>{
+  setInterval(() => {
     idx++;
-    if(idx > track.children.length - 1) idx = 0;
+    if (idx > track.children.length - 1) idx = 0;
     track.style.transition = 'transform .6s ease';
     track.style.transform = `translateX(-${idx * 280}px)`;
   }, 3200);
@@ -149,27 +100,32 @@ Date: ${dt}`);
 
 // demo contact form submit (no backend)
 const demoForm = document.getElementById('demoForm');
-demoForm && demoForm.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  if(!name || !email) { alert('Please fill name and email'); return; }
-  alert(`Demo request sent!\nName: ${name}\nEmail: ${email}\n(We will follow up)`);
-  demoForm.reset();
-});
+if (demoForm) {
+  demoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if (!name || !email) { alert('Please fill name and email'); return; }
+    alert(`Demo request sent!\nName: ${name}\nEmail: ${email}\n(We will follow up)`);
+    demoForm.reset();
+  });
+}
 
 // footer year
-document.getElementById('yr').textContent = new Date().getFullYear();
+const yrEl = document.getElementById('yr');
+if (yrEl) {
+  yrEl.textContent = new Date().getFullYear();
+}
 
 // small fade-in on load
-document.addEventListener('DOMContentLoaded', ()=> {
-  document.querySelectorAll('.section, .hero-left, .hero-right').forEach((el, i)=>{
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.section, .hero-left, .hero-right').forEach((el, i) => {
     el.style.opacity = 0;
     el.style.transform = 'translateY(20px)';
-    setTimeout(()=> {
+    setTimeout(() => {
       el.style.transition = 'opacity .8s ease, transform .8s ease';
       el.style.opacity = 1;
       el.style.transform = 'translateY(0)';
-    }, 200 + (i*120));
+    }, 200 + (i * 120));
   });
 });
