@@ -446,271 +446,392 @@
     <script src="services.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Element References
-            const cakeBtn = document.getElementById('cakeBtn');
-            const transportBtn = document.getElementById('transportBtn');
-            const signInBtn = document.getElementById('signInBtn'); // Reference new button
-            const simpleButtons = document.querySelectorAll('.simple-booking-btn'); // SELECT ALL NEW BUTTONS
+document.addEventListener('DOMContentLoaded', () => {
+  // elements
+  const cakeBtn = document.getElementById('cakeBtn');
+  const transportBtn = document.getElementById('transportBtn');
+  const signInBtn = document.getElementById('signInBtn');
+  const simpleButtons = document.querySelectorAll('.simple-booking-btn');
 
-            const modal = document.getElementById('modal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const defaultActions = document.getElementById('defaultModalActions');
-            const modalClose = document.getElementById('modalClose');
-            const modalBackdrop = document.getElementById('modalBackdrop');
-            const modalSecondary = document.getElementById('modalSecondary');
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const defaultActions = document.getElementById('defaultModalActions');
+  const modalClose = document.getElementById('modalClose');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalSecondary = document.getElementById('modalSecondary');
 
-            // Helper to open modal cleanly
-            function openCustomModal() {
-                modal.classList.add('modal-active-custom');
-                modal.style.display = 'flex';
-                modal.setAttribute('aria-hidden', 'false');
-            }
+  // same API base (already in script.js, but yaha bhi use kar sakte)
+  const API_BASE_URL = "https://easehub-backend.onrender.com";
 
-            // Helper to close modal
-            function closeCustomModal() {
-                modal.classList.remove('modal-active-custom');
-                modal.style.display = 'none';
-                modal.setAttribute('aria-hidden', 'true');
-            }
+  // ---------- Modal helpers (for this page) ----------
+  function openCustomModal() {
+    modal.classList.add('modal-active-custom');
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+  }
 
-            // Close listeners
-            modalClose.addEventListener('click', closeCustomModal);
-            modalBackdrop.addEventListener('click', closeCustomModal);
-            if (modalSecondary) modalSecondary.addEventListener('click', closeCustomModal);
+  function closeCustomModal() {
+    modal.classList.remove('modal-active-custom');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
 
-            // ============================================
-            // 1. CAKE LOGIC (Existing)
-            // ============================================
-            if (cakeBtn) {
-                cakeBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+  modalClose.addEventListener('click', closeCustomModal);
+  modalBackdrop.addEventListener('click', closeCustomModal);
+  if (modalSecondary) modalSecondary.addEventListener('click', closeCustomModal);
 
-                    openCustomModal();
-                    modalTitle.innerText = "Select Cake Preference";
-                    defaultActions.style.display = 'none';
+  // ---------- 1) CAKE UI ----------
+  if (cakeBtn) {
+    cakeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-                    modalBody.innerHTML = `
-                        <p class="muted" style="text-align:center;">Please choose a category to proceed</p>
-                        <div class="cake-selection-grid">
-                            <div class="cake-option" onclick="showCustomerForm('Veg')">
-                                <img src="data:image/jpeg;base64,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" alt="Veg Cake">
-                                <h4>🥦 Veg Cake</h4>
-                            </div>
-                            <div class="cake-option" onclick="showCustomerForm('Non-Veg')">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7qCgUo8ySWhCjfxcMZHWHjOcDkF7c9RN_sw&s" alt="Non-Veg Cake">
-                                <h4>🍗 Non-Veg Cake</h4>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
+      openCustomModal();
+      modalTitle.innerText = "Select Cake Preference";
+      defaultActions.style.display = 'none';
 
-            // ============================================
-            // 2. TRANSPORTATION LOGIC (Existing)
-            // ============================================
-            if (transportBtn) {
-                transportBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+      modalBody.innerHTML = `
+        <p class="muted" style="text-align:center;">Please choose a category to proceed</p>
+        <div class="cake-selection-grid">
+          <div class="cake-option" onclick="showCustomerForm('Veg')">
+            <img src="data:image/jpeg;base64,..." alt="Veg Cake">
+            <h4>🥦 Veg Cake</h4>
+          </div>
+          <div class="cake-option" onclick="showCustomerForm('Non-Veg')">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7qCgUo8ySWhCjfxcMZHWHjOcDkF7c9RN_sw&s" alt="Non-Veg Cake">
+            <h4>🍗 Non-Veg Cake</h4>
+          </div>
+        </div>
+      `;
+    });
+  }
 
-                    openCustomModal();
-                    modalTitle.innerText = "Select Transport Mode";
-                    defaultActions.style.display = 'none';
+  // ---------- 2) TRANSPORT UI ----------
+  if (transportBtn) {
+    transportBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-                    // 2x2 Grid for Bike, Car, Bus, Train
-                    modalBody.innerHTML = `
-                        <p class="muted" style="text-align:center;">How would you like to travel?</p>
-                        <div class="transport-selection-grid">
-                            <div class="transport-option" onclick="showTransportForm('Bike')">
-                                <img src="data:image/png;base64,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" alt="Bike">
-                                <h4>Bike</h4>
-                            </div>
-                            <div class="transport-option" onclick="showTransportForm('Car')">
-                                <img src="data:image/png;base64,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" alt="Car">
-                                <h4>Car</h4>
-                            </div>
-                            <div class="transport-option" onclick="showTransportForm('Bus')">
-                                <img src="data:image/png;base64,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" alt="Bus">
-                                <h4>Bus</h4>
-                            </div>
-                            <div class="transport-option" onclick="showTransportForm('Train')">
-                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKYAAACUCAMAAAAu5KLjAAAAZlBMVEX///8AAABvb2/p6emoqKj8/Pz5+fnw8PDMzMzQ0NBycnJDQ0Ovr6/k5OQbGxtdXV3b29s+Pj4xMTFpaWmgoKBQUFDDw8O2trZ8fHyXl5eRkZE3NzdLS0sgICAXFxcoKCiHh4cPDw86f7AtAAAFWElEQVR4nO2a6bKiMBCFhzWsJkBIwqLA+7/kNAiIsugdVG5N9fdjyvKO8dhJd5+O/vmDIAiCIAiCIAiCIAiCIAiCIAiCIMgvgjhm7um6nqg8YNbRapawQ5Fo91S5axwt6x5LqLO2QJm5R0ub4JbNksgupJQdra7HedztB/TfIJSp1UgOxObR6USei+zOKDlSJMte0dhyEYeJtHnxqkrQaR4jkpin10W28ANE2kH6M5HA9+Mpyh+LBIKvarQd/19EAt9sSUKfvrPn/UBmFH5Jo8XoQ4DMFUkpc11XSAmRv6ja0ymllebZX1HJ9Ec1zprMRvYvgcfZ9WH4neMZqmqmZlWmFvWdJ4dw9l1dafHH21FYL4lZl6l519cZULqifolIqz8sMl80lFsyh8QW2rjZXIs/aZesfK0vbsmk/Q7TMcftWMs/JtLYkLIlc0gdAm1VXb0cRPZDgwcxow0lmzJPfZ0M4HFvkXRNfUKktSnyrm425yh6OMBxFPm+X/pNO210+Nr5/aeTyG2RN5m+l7lQuwmf16xH1Lu9vHxug1wO/ySmEw7v7Tz7YG8Opy1ecL2NK3l4Hx3y1Jh47xNpySfzIuArLm5Neszg8KnOtyW7S5snb0UDZowabSenxfjipzrfk+z29vk6lTofHZlFXLP3I7cFyBPXfH6H8RQzGzShUqYz7JntmDW7FaTJEsaT3NvfikjSrAaB8pBc88Uiok6L013dnK7yRKe/93RaanHdJlW83ynCHNMbq2NXkKo0UZm8W8fe1rl3bA8XjFDjBf0VoOUGNb07uI6spZgk04hB5wvdqHfKFPfLnSNqdtXYIoao/VMz/qHwaS3ZxtBAtnRWO2UGk7VKSJdWB2GCq7HWN0VSc/nCDau9pXOnTDmskwSss4su99JRYuyZgoXzQYEwyefFcGvfd86YILMqExNWsQ0WDKkSl9Tjzp08i5CQucIQNF4NkLVe2nbmkFABOB3bNfOkk9ikXhYINlFoGUxIntVJ2urrMn11H+3VjisX/vcPsG1ofGncXmMVSQY5TG4d0XBl5tEyiieXXMvlfYSsxXPnhZJsm2ECnsKwem3t1gaZVy5fwIF7r4oypYm+4nuyZQO6U6YrnesOQxUPeK301J9X0qaKaKJqbkphhI7LwknMZ7DFa9Cd14g2c2Tu+dWlGSSdqiouopJSL89M+BAgCbB+YMFt25ix81oh0M6Q1rCFdZ1nbbiEC8KOvuKfQVgIWwgBO1rIfwHhsNlZxrlpBi0SEIALsBYINkSbkP6EHnUc5GNONs3pdDpXQAwURdHN3jB9X0kH2ik80XWv/Qp4itdx90yS7T9TDJoL1PDn8/YO9tpNkpsi0agNtg3UKl7r6Q++/HmV3TPG1cddiojqsXZ27O4Udk/mKomKuDrfLOc/Q3cfaJvnik7i18RU5Rn0yeTaZ0joyoAPg+O/KVZvuTG2QIrgycPZbGu+p8AshSDXuXTPmW235ypJf/R9m/nekmwxmdOyWJAQdxZOU+GtC7Tuzsy99tuKLS5+/ZHrTTsEd6SWw3U5FVSvoc8L92bob7MUNWcE4pPfENjg02Esb9Zi1FSFD1YOigSYq8EIR4f9HIW4prp69g2GDyOhYS3MxV/CMiBt8scEW+Tsp16d8wDOxEFyoZ7CxOm/VkSbcwV+NanN9toBfMD31TIBo5t/eUHrQJwmztd1tnRl1ltrqVUy+0t65G+9rLArs7PBye1uTTLVupnL8TJ7rU5bZqdaxxGy7QAwBHrJcT+iuQNmZlfWw73d4y3MrxtfiMM9/Tf9lA9BEARBEARBEARBEARBEARBEARB/mv+AssyUiefA3ERAAAAAElFTkSuQmCC" alt="Train">
-                                <h4>Train</h4>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            // ============================================
-            // NEW: SIGN IN LOGIC
-            // ============================================
-            
-            if (signInBtn) {
-                signInBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openCustomModal();
-                    // modalTitle.innerText = "Welcome Back!";
-                    
-                    defaultActions.style.display = 'none'; // Hide default buttons
+      openCustomModal();
+      modalTitle.innerText = "Select Transport Mode";
+      defaultActions.style.display = 'none';
 
-                    // Reusing your existing css classes for a clean look
-                    modalBody.innerHTML = `
-                        <form onsubmit="handleLogin(event)">
-                            <div class="cake-form-group">
-                            <center><img src="https://i.ibb.co/7tD8cqYC/Untitled-design.png" alt="My Website Logo" width="150" height="auto"></center><center><span class="logo-text"><b>WELCOME BACK!</b></span></center><br>
-                                
-                            <label>Email or Username</label>
-                                <input type="email" class="cake-form-input" placeholder="student@college.edu" required>
-                            </div>
-                            <div class="cake-form-group">
-                                <label>Password</label>
-                                <input type="password" class="cake-form-input" placeholder="••••••••••••" required>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.9rem;">
-                                <label><input type="checkbox"> Remember me</label>
-                                <a href="#" style="color:#fca311; text-decoration:none;"><b>Forgot Password?</b></a>
-                            </div>
-                            <button type="submit" class="btn-order-confirm">Sign In</button>
-                        </form>
-                        <p class="muted" style="text-align:center; margin-top:15px; font-size:0.9rem;">
-                            New to EaseHub? <a href="#" style="color:#fca311; font-weight:bold;">Create Account</a>
-                        </p>
-                    `;
-                });
-            }
+      modalBody.innerHTML = `
+        <p class="muted" style="text-align:center;">How would you like to travel?</p>
+        <div class="transport-selection-grid">
+          <div class="transport-option" onclick="showTransportForm('Bike')">
+            <img src="data:image/png;base64,..." alt="Bike">
+            <h4>Bike</h4>
+          </div>
+          <div class="transport-option" onclick="showTransportForm('Car')">
+            <img src="data:image/png;base64,..." alt="Car">
+            <h4>Car</h4>
+          </div>
+          <div class="transport-option" onclick="showTransportForm('Bus')">
+            <img src="data:image/png;base64,..." alt="Bus">
+            <h4>Bus</h4>
+          </div>
+          <div class="transport-option" onclick="showTransportForm('Train')">
+            <img src="data:image/png;base64,..." alt="Train">
+            <h4>Train</h4>
+          </div>
+        </div>
+      `;
+    });
+  }
 
-            // Fake Login Handler
-            window.handleLogin = function (e) {
-                e.preventDefault();
-                // Simulate processing
-                const btn = e.target.querySelector('button');
-                const originalText = btn.innerText;
-                btn.innerText = "Verifying...";
-                btn.style.opacity = "0.7";
+  // ---------- 3) REAL SIGN IN (Backend se) ----------
+  if (signInBtn) {
+    signInBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCustomModal();
+      showLoginForm();       // neeche function defined
+    });
+  }
 
-                setTimeout(() => {
-                    closeCustomModal();
-                    alert("Successfully Signed In!");
-                    // Optional: Change button text to "Profile" after login
-                    signInBtn.innerText = "Profile";
-                    signInBtn.style.border = "2px solid #fca311";
-                    signInBtn.style.color = "#fca311";
-                }, 1500);
-            }
+  // Agar already login hai, nav button pe "Profile" dikhao
+  try {
+    const saved = localStorage.getItem('easehub_user');
+    if (saved && signInBtn) {
+      const u = JSON.parse(saved);
+      signInBtn.innerText = u?.name ? u.name.split(' ')[0] : "Profile";
+    }
+  } catch (_) {}
 
-            // ============================================
-            // 3. GENERIC SERVICES (Electrician, RO, Sweeper, etc.)
-            // ============================================
-            simpleButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+  // ----- LOGIN FORM (modal ke andar banaata hai) -----
+  function showLoginForm() {
+    modalTitle.innerText = "WELCOME BACK!";
+    defaultActions.style.display = 'none';
+    modalBody.innerHTML = `
+      <form onsubmit="handleLogin(event)">
+        <center>
+          <img src="https://i.ibb.co/7tD8cqYC/Untitled-design.png" alt="EaseHub Logo" width="150">
+          <br><span class="logo-text"><b>WELCOME BACK!</b></span>
+        </center><br>
 
-                    const serviceName = btn.getAttribute('data-service');
-                    openCustomModal();
+        <div class="cake-form-group">
+          <label>Email</label>
+          <input type="email" name="email" class="cake-form-input"
+                 placeholder="student@college.edu" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Password</label>
+          <input type="password" name="password" class="cake-form-input"
+                 placeholder="••••••••••••" required>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.9rem;">
+          <label><input type="checkbox"> Remember me</label>
+          <a href="#" style="color:#fca311; text-decoration:none;"><b>Forgot Password?</b></a>
+        </div>
+        <button type="submit" class="btn-order-confirm" id="loginSubmitBtn">Sign In</button>
+      </form>
+      <p class="muted" style="text-align:center; margin-top:15px; font-size:0.9rem;">
+        New to EaseHub? <a href="#" id="openSignupLink" style="color:#fca311; font-weight:bold;">Create Account</a>
+      </p>
+    `;
 
-                    // Show Form Immediately (No Sub-cards needed)
-                    showGenericBookingForm(serviceName);
-                    defaultActions.style.display = 'none';
-                });
-            });
+    const signupLink = document.getElementById('openSignupLink');
+    if (signupLink) {
+      signupLink.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        showSignupForm();
+      });
+    }
+  }
 
+  // ----- SIGNUP FORM -----
+  function showSignupForm() {
+    modalTitle.innerText = "Create your EaseHub account";
+    defaultActions.style.display = 'none';
+    modalBody.innerHTML = `
+      <form onsubmit="handleSignup(event)">
+        <div class="cake-form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" class="cake-form-input"
+                 placeholder="e.g., Rahul Kumar" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Email Address</label>
+          <input type="email" name="email" class="cake-form-input"
+                 placeholder="e.g., rahul@college.edu" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Password</label>
+          <input type="password" name="password" class="cake-form-input"
+                 placeholder="Min 6 characters" required>
+        </div>
+        <button type="submit" class="btn-order-confirm" id="signupSubmitBtn">Create Account</button>
+      </form>
+      <p class="muted" style="text-align:center; margin-top:15px; font-size:0.9rem;">
+        Already have an account? <a href="#" id="backToLoginLink" style="color:#fca311; font-weight:bold;">Sign In</a>
+      </p>
+    `;
 
-            // ============================================
-            // 4. FORM FUNCTIONS (Global)
-            // ============================================
+    const backLink = document.getElementById('backToLoginLink');
+    if (backLink) {
+      backLink.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        showLoginForm();
+      });
+    }
+  }
 
-            // For Cake
-            window.showCustomerForm = function (cakeType) {
-                modalTitle.innerText = `Details for ${cakeType} Cake`;
-                modalBody.innerHTML = `
-                    <form onsubmit="submitOrder(event, '${cakeType} Cake')">
-                        <div class="cake-form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="cake-form-input" placeholder="e.g., Rahul Kumar" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Email Address</label>
-                            <input type="email" class="cake-form-input" placeholder="e.g., rahul@college.edu" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" class="cake-form-input" placeholder="e.g., 9876543210" required>
-                        </div>
-                         <div class="cake-form-group">
-                            <label>Special Instructions (Optional)</label>
-                            <input type="text" class="cake-form-input" placeholder="Flavor, time, etc.">
-                        </div>
-                        <button type="submit" class="btn-order-confirm">Confirm ${cakeType} Order</button>
-                    </form>
-                    <p style="text-align:center; margin-top:10px; cursor:pointer; color:#888;" onclick="cakeBtn.click()">← Back</p>
-                `;
-            }
+  // ----- REAL LOGIN HANDLER (backend call) -----
+  window.handleLogin = async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.querySelector('input[name="email"]').value.trim();
+    const password = form.querySelector('input[name="password"]').value.trim();
 
-            // For Transportation
-            window.showTransportForm = function (mode) {
-                modalTitle.innerText = `Book a ${mode} Ride`;
-                modalBody.innerHTML = `
-                    <form onsubmit="submitOrder(event, '${mode} Booking')">
-                        <div class="cake-form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="cake-form-input" placeholder="Your Name" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Email Address</label>
-                            <input type="email" class="cake-form-input" placeholder="Your Email" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" class="cake-form-input" placeholder="Your Contact Number" required>
-                        </div>
-                         <div class="cake-form-group">
-                            <label>Pickup Location</label>
-                            <input type="text" class="cake-form-input" placeholder="Where are you?" required>
-                        </div>
-                        <button type="submit" class="btn-order-confirm">Confirm ${mode}</button>
-                    </form>
-                    <p style="text-align:center; margin-top:10px; cursor:pointer; color:#888;" onclick="transportBtn.click()">← Back</p>
-                `;
-            }
+    if (!email || !password) {
+      alert("Please fill email and password");
+      return;
+    }
 
-            // For Generic Services (Electrician, RO, etc.) - NEW
-            window.showGenericBookingForm = function (serviceName) {
-                modalTitle.innerText = `${serviceName} Booking`;
-                modalBody.innerHTML = `
-                     <form onsubmit="submitOrder(event, '${serviceName} Request')">
-                        <div class="cake-form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="cake-form-input" placeholder="Your Name" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" class="cake-form-input" placeholder="Contact Number" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Email Address</label>
-                            <input type="email" class="cake-form-input" placeholder="Email ID" required>
-                        </div>
-                        <div class="cake-form-group">
-                            <label>Select Date</label>
-                            <input type="date" class="cake-form-input" required>
-                        </div>
-                        <button type="submit" class="btn-order-confirm">Confirm ${serviceName}</button>
-                    </form>
-                `;
-            }
+    const btn = document.getElementById('loginSubmitBtn');
+    const oldText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Verifying...";
 
-            // Universal Submit Action
-            window.submitOrder = function (e, type) {
-                e.preventDefault();
-                alert(`Thank you! Your request for "${type}" has been received. We will contact you shortly.`);
-                closeCustomModal();
-            }
-        });
-    </script>
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed. Please try again.");
+      }
+
+      // token + user store
+      if (data.accessToken) {
+        localStorage.setItem("easehub_access_token", data.accessToken);
+      }
+      if (data.user) {
+        localStorage.setItem("easehub_user", JSON.stringify(data.user));
+      }
+
+      alert(data.message || "Logged in successfully!");
+      closeCustomModal();
+
+      if (signInBtn) {
+        signInBtn.innerText = data.user?.name
+          ? data.user.name.split(" ")[0]
+          : "Profile";
+      }
+    } catch (err) {
+      alert(err.message || "Login failed. Please try again.");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = oldText;
+    }
+  };
+
+  // ----- REAL SIGNUP HANDLER (backend /api/auth/register) -----
+  window.handleSignup = async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.querySelector('input[name="name"]').value.trim();
+    const email = form.querySelector('input[name="email"]').value.trim();
+    const password = form.querySelector('input[name="password"]').value.trim();
+
+    if (!name || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    const btn = document.getElementById('signupSubmitBtn');
+    const oldText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Creating...";
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed. Please try again.");
+      }
+
+      alert(
+        data.message ||
+        `Account created! Please check your email (${email}) for the verification link.`
+      );
+      closeCustomModal();
+    } catch (err) {
+      alert(err.message || "Signup failed. Please try again.");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = oldText;
+    }
+  };
+
+  // ---------- 4) GENERIC SERVICES (Electrician, RO, Sweeper, etc.) ----------
+  simpleButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const service = btn.getAttribute('data-service');
+      openCustomModal();
+      showGenericBookingForm(service);
+      defaultActions.style.display = 'none';
+    });
+  });
+
+  // ---------- 5) FORM HELPERS (cake / transport / generic) ----------
+  window.showCustomerForm = function (cakeType) {
+    modalTitle.innerText = `Details for ${cakeType} Cake`;
+    modalBody.innerHTML = `
+      <form onsubmit="submitOrder(event, '${cakeType} Cake')">
+        <div class="cake-form-group">
+          <label>Full Name</label>
+          <input type="text" class="cake-form-input" placeholder="e.g., Rahul Kumar" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Email Address</label>
+          <input type="email" class="cake-form-input" placeholder="e.g., rahul@college.edu" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Phone Number</label>
+          <input type="tel" class="cake-form-input" placeholder="e.g., 9876543210" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Special Instructions (Optional)</label>
+          <input type="text" class="cake-form-input" placeholder="Flavor, time, etc.">
+        </div>
+        <button type="submit" class="btn-order-confirm">Confirm ${cakeType} Order</button>
+      </form>
+      <p style="text-align:center; margin-top:10px; cursor:pointer; color:#888;" onclick="cakeBtn.click()">← Back</p>
+    `;
+  };
+
+  window.showTransportForm = function (mode) {
+    modalTitle.innerText = `Book a ${mode} Ride`;
+    modalBody.innerHTML = `
+      <form onsubmit="submitOrder(event, '${mode} Booking')">
+        <div class="cake-form-group">
+          <label>Full Name</label>
+          <input type="text" class="cake-form-input" placeholder="Your Name" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Email Address</label>
+          <input type="email" class="cake-form-input" placeholder="Your Email" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Phone Number</label>
+          <input type="tel" class="cake-form-input" placeholder="Your Contact Number" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Pickup Location</label>
+          <input type="text" class="cake-form-input" placeholder="Where are you?" required>
+        </div>
+        <button type="submit" class="btn-order-confirm">Confirm ${mode}</button>
+      </form>
+      <p style="text-align:center; margin-top:10px; cursor:pointer; color:#888;" onclick="transportBtn.click()">← Back</p>
+    `;
+  };
+
+  window.showGenericBookingForm = function (serviceName) {
+    modalTitle.innerText = `${serviceName} Booking`;
+    modalBody.innerHTML = `
+      <form onsubmit="submitOrder(event, '${serviceName} Request')">
+        <div class="cake-form-group">
+          <label>Full Name</label>
+          <input type="text" class="cake-form-input" placeholder="Your Name" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Phone Number</label>
+          <input type="tel" class="cake-form-input" placeholder="Contact Number" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Email Address</label>
+          <input type="email" class="cake-form-input" placeholder="Email ID" required>
+        </div>
+        <div class="cake-form-group">
+          <label>Select Date</label>
+          <input type="date" class="cake-form-input" required>
+        </div>
+        <button type="submit" class="btn-order-confirm">Confirm ${serviceName}</button>
+      </form>
+    `;
+  };
+
+  window.submitOrder = function (e, type) {
+    e.preventDefault();
+    alert(`Thank you! Your request for "${type}" has been received. We will contact you shortly.`);
+    closeCustomModal();
+  };
+});
+</script>
+
 <!-- <a href="social.html">social</a> -->
 <!-- <a class="tag" href="feedback.html">FEEDBACK</a> -->
 </body>
