@@ -458,7 +458,26 @@
             </div>
           `;
       };
-
+// 2. Generate HTML Helper Function (UPDATED WITH BOOK NOW BUTTON)
+      const createCard = (item, isCombo) => {
+        const btnClass = type === 'veg' ? 'btn-veg' : 'btn-nonveg';
+        
+        return `
+          <div class="plan-card">
+            <img src="${item.img}" alt="${item.title}" class="plan-img">
+            <div class="plan-type">${item.title}</div>
+            <div class="plan-price">₹ ${item.price}</div>
+            <div class="plan-period">Per Month</div>
+            
+            <div class="btn-group">
+                <button class="btn-plan ${btnClass}">Book Now</button>
+                <button class="btn-plan ${btnClass}">
+                    <a href="https://wa.me/916201614778?text=Hello,%20I%20would%20like%20to%20order%20the%20${item.title}%20Plan." style="color: white; text-decoration: none;">Order Now</a>
+                </button>
+            </div>
+          </div>
+        `;
+      };
       // 3. Populate Grids
       individualGrid.innerHTML = pricing[type].individual.map(item => createCard(item, false)).join('');
       comboGrid.innerHTML = pricing[type].combos.map(item => createCard(item, true)).join('');
